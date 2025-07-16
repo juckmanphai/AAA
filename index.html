@@ -36,16 +36,16 @@
     .header-actions:hover { background-color: #B5E6A2; }
     .header-summary { background-color: #ED01ED; }
     .header-summary:hover { background-color: #B5E6A2; }
-    .section-content { display: none; padding: 5px; border: 1px solid #ddd; border-radius: 20px; background-color: #f9f9f9; margin-bottom: 15px; }
+    .section-content { display: none; padding: 15px; border: 1px solid #ddd; border-radius: 20px; background-color: #f9f9f9; margin-bottom: 15px; }
     .section-content.active { display: block; }
-    .sub-section-header { background-color: rgba(92, 107, 192, 0.6); margin-top: 20px; }
-    .sub-section-header:hover { background-color: rgba(63, 81, 181, 0.75); }
+    .sub-section-header { background-color: #ff9800; color: white; margin-top: 20px; }
+    .sub-section-header:hover { background-color: #fb8c00; }
     .sub-section-content { border: none; background-color: transparent; padding: 10px 0 0 0; margin-bottom: 0; }
     .entry-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-    .entry-group { display: flex; flex-direction: column; }
+    .entry-group { display: flex; flex-direction: column; gap: 5px; }
     .button-group, .button-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; }
     label { font-weight: bold; color: #333; font-size: 16px; margin-bottom: 5px; text-align: center; }
-    select, input[type="text"], input[type="number"], input[type="date"], input[type="time"] { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 20px; background-color: #f9f9f9; text-align: center; }
+    select, input[type="text"], input[type="number"], input[type="date"], input[type="time"], input[type="password"] { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 20px; background-color: #f9f9f9; text-align: center; }
     input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; }
     .back-button, .file-button { font-size: 16px; padding: 12px 20px; border-radius: 20px; border: none; color: white; cursor: pointer; transition: background-color 0.3s, transform 0.2s; margin: 10px auto; display: block; width: 60%; max-width: 300px; }
@@ -56,7 +56,7 @@
     .button-group button, .button-container button { padding: 12px; font-size: 16px; border: none; border-radius: 50px; background-color: #4caf50; color: white; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
     .button-group button:hover, .button-container button:hover { background-color: #45a049; transform: translateY(-2px); }
     #recordTable { width: 100%; border-collapse: collapse; margin: 10px auto; }
-    #recordTable th, #recordTable td { border: 1px solid #ccc; padding: 8px; line-height: 0.5; text-align: center; word-break: break-word; }
+    #recordTable th, #recordTable td { border: 1px solid #ccc; padding: 8px; line-height: 1.0; text-align: center; word-break: break-word; }
     #recordTable th { background-color: #f4f4f4; }
     #recordTable tr:nth-child(even) { background-color: #f9f9f9; }
     #recordTable tr:hover { background-color: #f1f1f1; }
@@ -82,36 +82,10 @@
     .install-prompt h4 { margin-top: 0; }
     .install-prompt ul { padding-left: 20px; margin-bottom: 0; }
     .install-prompt .close-prompt { position: absolute; top: 10px; right: 15px; font-size: 20px; font-weight: bold; cursor: pointer; color: #856404; }
-    
-    /* --- CSS ที่เพิ่มเข้ามาสำหรับ Modal เลือกรูปแบบสรุปและไฟล์ --- */
-    .format-modal-content {
-      background-color: #fff;
-      padding: 20px 30px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      width: 90%;
-      max-width: 400px;
-    }
-    .format-modal-content h3 {
-      margin-top: 0;
-      color: #333;
-    }
-    .format-modal-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .format-modal-buttons button {
-      padding: 15px;
-      font-size: 16px;
-      border: none;
-      border-radius: 10px;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
+    .format-modal-content { background-color: #fff; padding: 20px 30px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); width: 90%; max-width: 400px; }
+    .format-modal-content h3 { margin-top: 0; color: #333; }
+    .format-modal-buttons { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .format-modal-buttons button { padding: 15px; font-size: 16px; border: none; border-radius: 10px; color: white; cursor: pointer; transition: background-color 0.3s; }
     .format-modal-buttons .btn-json { background-color: #9C27B0; }
     .format-modal-buttons .btn-json:hover { background-color: #7B1FA2; }
     .format-modal-buttons .btn-csv { background-color: #2E7D32; }
@@ -120,8 +94,6 @@
     .format-modal-buttons .btn-cancel:hover { background-color: #5a6268; }
     .format-modal-buttons .btn-display { background-color: #007bff; }
     .format-modal-buttons .btn-display:hover { background-color: #0056b3; }
-
-
     @media screen and (max-width: 600px) { .container { padding: 5px; } h2 { font-size: 24px; } .entry-form, .button-group, .button-container { grid-template-columns: 1fr; } .sub-section-content .button-group { grid-template-columns: repeat(3, 1fr); gap: 5px; } .sub-section-content .button-group button { padding: 10px 5px; font-size: 14px; } .button-group button, .button-container button { padding: 14px; font-size: 16px; } .file-actions { flex-direction: column; padding: 0 10px; align-items: stretch; } .file-actions button { width: 100%; max-width: none; } .back-button { width: 100%; } }
   </style>
 </head>
@@ -143,7 +115,6 @@
 <div style="text-align: center; margin-top: 5px;">
     <div class="container">
         <!-- เนื้อหา HTML หลักทั้งหมดของคุณ -->
-        <!-- ... -->
         <div style="width: 100%; max-width: 600px; margin: 10px auto;">
             <div class="file-actions" style="display: flex; justify-content: center; gap: 10px;">
               <div class="file-button-wrapper" style="flex: 1; min-width: 0;">
@@ -268,13 +239,42 @@
             <div class="button-container" style="display: flex; gap: 10px; margin-top: 10px;">
               <button onclick="toggleRecordsVisibility()" style="flex: 1; background-color: #607d8b;">แสดง/ซ่อนรายการ</button>
             </div>
+            
+            <!-- START: CODE ที่เพิ่มเข้ามาสำหรับรหัสผ่าน -->
+            <div class="sub-section-header" onclick="toggleSection('backup-password-submenu')">
+                <span>ตั้งรหัสผ่านไฟล์สำรอง (JSON)</span>
+                <span class="arrow">▶</span>
+            </div>
+            <div id="backup-password-submenu" class="section-content sub-section-content">
+                 <p style="text-align: left; color: #333;">รหัสผ่านนี้จะใช้เข้ารหัสไฟล์สำรองข้อมูล (JSON) โดยอัตโนมัติเพื่อความปลอดภัย</p>
+                <form id="backup-password-form">
+                    <div class="entry-group" style="margin-bottom:10px;">
+                        <label for="backup-password" style="text-align:left;">รหัสผ่านใหม่ (เว้นว่างเพื่อลบ):</label>
+                        <input type="password" id="backup-password" placeholder="พิมพ์รหัสผ่านที่นี่">
+                    </div>
+                    <div class="entry-group" style="margin-bottom:10px;">
+                        <label for="backup-password-confirm" style="text-align:left;">ยืนยันรหัสผ่านใหม่:</label>
+                        <input type="password" id="backup-password-confirm" placeholder="พิมพ์รหัสผ่านอีกครั้ง">
+                    </div>
+                    <div class="entry-group" style="margin-bottom:10px;">
+                         <label style="font-weight: normal; cursor: pointer; text-align:left; display:inline-flex; align-items:center; gap: 5px;">
+                            <input type="checkbox" id="show-backup-password" style="width:auto;"> แสดงรหัสผ่าน
+                        </label>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" style="background-color: #28a745;">บันทึกรหัสผ่าน</button>
+                    </div>
+                </form>
+                <p id="password-status" style="font-weight: bold; margin-top: 15px; text-align:center;"></p>
+            </div>
+            <!-- END: CODE ที่เพิ่มเข้ามาสำหรับรหัสผ่าน -->
+            
             <div class="button-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
               <button type="button" onclick="saveToFile()" style="flex: 1; background-color: #0d47a1;">บันทึกถาวรทุกบัญชี</button>
               <button type="button" onclick="saveToLocal()" style="flex: 1; background-color: #17a2b8;">บันทึกชั่วคราว</button>
               <button type="button" onclick="exportSelectedAccount()" style="flex: 1; background-color: #ff9800; color: white;">ส่งออกบัญชีที่เลือก</button>
             </div>
             
-            <!-- START: CODE ที่เพิ่มเข้ามา -->
             <div class="summary-subsection">
                 <label class="summary-subsection-header" style="color: #c0392b;">ลบข้อมูลตามวันที่เลือก (ในบัญชีนี้)</label>
                 <div class="entry-form" style="margin-bottom: 0;">
@@ -287,8 +287,7 @@
                     <button type="button" onclick="deleteRecordsByDate()" style="background-color: #dc3545;">ลบข้อมูลวันที่เลือก</button>
                 </div>
             </div>
-            <!-- END: CODE ที่เพิ่มเข้ามา -->
-
+            
           </div>
         
           <!-- --- ส่วนสรุปข้อมูลที่อัปเดตแล้ว --- -->
@@ -416,7 +415,10 @@
     let accountTypes = new Map();
     let tempTypeValue = '';
     
-    // --- ตัวแปรที่เพิ่มเข้ามาสำหรับจัดการ context ของการสรุป ---
+    // START: CODE ที่เพิ่มเข้ามาสำหรับรหัสผ่าน
+    let backupPassword = null;
+    // END: CODE ที่เพิ่มเข้ามาสำหรับรหัสผ่าน
+    
     let summaryContext = {};
 
     function showAllTypes(inputElement) { tempTypeValue = inputElement.value; inputElement.value = ''; }
@@ -515,10 +517,6 @@
     function editAccount() { if (!currentAccount) { alert("กรุณาเลือกบัญชีที่ต้องการแก้ไข"); return; } const newAccountName = prompt("กรุณากรอกชื่อบัญชีใหม่:", currentAccount); if (newAccountName && newAccountName !== currentAccount && !accounts.includes(newAccountName)) { const oldAccountName = currentAccount; const index = accounts.indexOf(oldAccountName); if (index > -1) { accounts[index] = newAccountName; records.forEach(record => { if (record.account === oldAccountName) { record.account = newAccountName; } }); if (accountTypes.has(oldAccountName)) { const oldTypes = accountTypes.get(oldAccountName); accountTypes.set(newAccountName, oldTypes); accountTypes.delete(oldAccountName); } currentAccount = newAccountName; updateAccountSelect(); document.getElementById('accountSelect').value = newAccountName; document.getElementById('accountName').textContent = currentAccount; displayRecords(); updateMultiAccountSelector(); alert("แก้ไขชื่อบัญชีเรียบร้อย"); saveToLocal(); } } else { alert("ชื่อบัญชีซ้ำหรือกรอกข้อมูลไม่ถูกต้อง"); } }
     function deleteAccount() { if (currentAccount) { const confirmDelete = confirm(`คุณแน่ใจว่าจะลบบัญชี "${currentAccount}" และข้อมูลทั้งหมดในบัญชีนี้หรือไม่?`); if (confirmDelete) { const accountToDelete = currentAccount; const index = accounts.indexOf(accountToDelete); if (index > -1) { accounts.splice(index, 1); } accountTypes.delete(accountToDelete); records = records.filter(rec => rec.account !== accountToDelete); currentAccount = null; document.getElementById('accountSelect').value = ""; document.getElementById('accountName').textContent = ""; updateAccountSelect(); displayRecords(); updateMultiAccountSelector(); alert("ลบบัญชีเรียบร้อย"); saveToLocal(); } } else { alert("กรุณาเลือกบัญชีที่ต้องการลบ"); } }
     
-    // START: CODE ที่เพิ่มเข้ามา
-    /**
-     * ลบรายการทั้งหมดในบัญชีปัจจุบันตามวันที่ที่เลือก
-     */
     function deleteRecordsByDate() {
         const dateInput = document.getElementById('deleteByDateInput');
         const selectedDate = dateInput.value;
@@ -532,7 +530,6 @@
             return;
         }
 
-        // ค้นหา ID (index) ของรายการทั้งหมดที่ตรงกับเงื่อนไข
         const recordsToDelete = records.filter(record =>
             record.account === currentAccount && record.dateTime.startsWith(selectedDate)
         );
@@ -547,16 +544,14 @@
         );
 
         if (confirmDelete) {
-            // สร้าง array ใหม่โดยกรองรายการที่จะลบออกไป
             records = records.filter(record => !recordsToDelete.includes(record));
             
             displayRecords();
             saveDataAndShowToast();
             alert(`ลบข้อมูล ${recordsToDelete.length} รายการของวันที่ ${selectedDate} เรียบร้อยแล้ว`);
-            dateInput.value = ''; // ล้างค่าในช่อง input
+            dateInput.value = ''; 
         }
     }
-    // END: CODE ที่เพิ่มเข้ามา
 
     function addEntry() {
         let entryDateInput = document.getElementById('entryDate').value;
@@ -623,7 +618,7 @@
         updateMultiAccountSelector();
     }
 
-    function saveDataAndShowToast(entryCategory = 'neutral') { const dataToSave = { accounts: [...accounts], currentAccount: currentAccount, records: [...records], accountTypes: Array.from(accountTypes.entries()) }; try { localStorage.setItem('accountData', JSON.stringify(dataToSave)); } catch (error) { console.error("บันทึกข้อมูลไม่สำเร็จ:", error); alert("⚠️ เกิดข้อผิดพลาดในการบันทึกข้อมูล"); return; } const toast = document.getElementById('toast'); toast.textContent = '✓ บันทึกข้อมูลสำเร็จแล้ว'; if (entryCategory === 'income') { toast.style.backgroundColor = '#28a745'; } else if (entryCategory === 'expense') { toast.style.backgroundColor = '#dc3545'; } else { toast.style.backgroundColor = '#007bff'; } toast.className = "toast-notification show"; setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 2500); }
+    function saveDataAndShowToast(entryCategory = 'neutral') { const dataToSave = { accounts: [...accounts], currentAccount: currentAccount, records: [...records], accountTypes: Array.from(accountTypes.entries()), backupPassword: backupPassword }; try { localStorage.setItem('accountData', JSON.stringify(dataToSave)); } catch (error) { console.error("บันทึกข้อมูลไม่สำเร็จ:", error); alert("⚠️ เกิดข้อผิดพลาดในการบันทึกข้อมูล"); return; } const toast = document.getElementById('toast'); toast.textContent = '✓ บันทึกข้อมูลสำเร็จแล้ว'; if (entryCategory === 'income') { toast.style.backgroundColor = '#28a745'; } else if (entryCategory === 'expense') { toast.style.backgroundColor = '#dc3545'; } else { toast.style.backgroundColor = '#007bff'; } toast.className = "toast-notification show"; setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 2500); }
     function displayRecords() { const recordBody = document.getElementById('recordBody'); recordBody.innerHTML = ""; const filteredRecords = records.filter(record => record.account === currentAccount) .sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime)); filteredRecords.forEach((record, index) => { const originalIndex = records.findIndex(r => r === record); const dateTime = new Date(record.dateTime); const formattedDate = `${String(dateTime.getDate()).padStart(2, '0')}/${String(dateTime.getMonth() + 1).padStart(2, '0')}/${dateTime.getFullYear()}`; const formattedTime = `${String(dateTime.getHours()).padStart(2, '0')}.${String(dateTime.getMinutes()).padStart(2, '0')} น.`; const row = document.createElement('tr'); row.innerHTML = ` <td>${formattedDate}</td> <td>${formattedTime}</td> <td>${record.type}</td> <td>${record.description}</td> <td>${record.amount.toLocaleString()} บาท</td> <td> <button onclick="editRecord(${originalIndex})">แก้ไข</button> <button onclick="deleteRecord(${originalIndex})">ลบ</button> </td> `; recordBody.appendChild(row); }); if (filteredRecords.length === 0) { const row = document.createElement('tr'); row.innerHTML = `<td colspan="6" style="text-align: center;">ไม่มีข้อมูล</td>`; recordBody.appendChild(row); } }
     
     function editRecord(index) {
@@ -650,7 +645,6 @@
         return new Date(year, month - 1, day);
     }
 
-    // --- ฟังก์ชันจัดการ Modal สรุปข้อมูลที่เพิ่มเข้ามา ---
     function openSummaryOutputModal() { document.getElementById('summaryOutputModal').style.display = 'flex'; }
     function closeSummaryOutputModal() { document.getElementById('summaryOutputModal').style.display = 'none'; summaryContext = {}; }
     
@@ -671,7 +665,6 @@
         closeSummaryOutputModal();
     }
 
-    // --- ฟังก์ชันสรุปข้อมูลชุดใหม่ทั้งหมด ---
     function generateSummaryData(startDate, endDate) {
         if (!currentAccount || !accountTypes.has(currentAccount)) { alert("ไม่พบบัญชีหรือประเภทของบัญชี"); return null; }
         const summary = { income: {}, expense: {}, totalIncome: 0, totalExpense: 0, incomeCount: 0, expenseCount: 0 };
@@ -699,7 +692,6 @@
         return { summary, periodRecords, totalBalance };
     }
     
-    // ***** ฟังก์ชันใหม่: สร้าง HTML สำหรับแสดงบนจอในรูปแบบดั้งเดิมของไฟล์ 10 *****
     function buildOriginalSummaryHtml(context) {
         const { summaryResult, title, dateString, remark, transactionDaysInfo, type, thaiDateString, headerLine1, headerLine2, headerLine3 } = context;
         const { summary, periodRecords, totalBalance } = summaryResult;
@@ -802,7 +794,6 @@
         URL.revokeObjectURL(link.href);
     }
     
-    // --- ฟังก์ชันเรียกสรุปที่ถูกแก้ไขให้ใช้ context ---
     function summarizeToday() {
         if (!currentAccount) { alert("กรุณาเลือกบัญชีก่อน"); return; }
         const startDate = new Date(new Date().setHours(0, 0, 0, 0));
@@ -919,54 +910,161 @@
         };
         openSummaryOutputModal();
     }
+    
+    // START: CODE ที่เพิ่มเข้ามาสำหรับรหัสผ่าน
+    // Helper functions for cryptography
+    function arrayBufferToBase64(buffer) { let binary = ''; const bytes = new Uint8Array(buffer); const len = bytes.byteLength; for (let i = 0; i < len; i++) { binary += String.fromCharCode(bytes[i]); } return window.btoa(binary); }
+    function base64ToArrayBuffer(base64) { const binary_string = window.atob(base64); const len = binary_string.length; const bytes = new Uint8Array(len); for (let i = 0; i < len; i++) { bytes[i] = binary_string.charCodeAt(i); } return bytes.buffer; }
+    async function deriveKey(password, salt) { const enc = new TextEncoder(); const keyMaterial = await window.crypto.subtle.importKey('raw', enc.encode(password), { name: 'PBKDF2' }, false, ['deriveKey']); return window.crypto.subtle.deriveKey({ "name": 'PBKDF2', salt: salt, "iterations": 100000, "hash": 'SHA-256' }, keyMaterial, { "name": 'AES-GCM', "length": 256 }, true, [ "encrypt", "decrypt" ] ); }
+    async function encryptData(dataString, password) { const salt = window.crypto.getRandomValues(new Uint8Array(16)); const iv = window.crypto.getRandomValues(new Uint8Array(12)); const key = await deriveKey(password, salt); const enc = new TextEncoder(); const encodedData = enc.encode(dataString); const encryptedContent = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, encodedData); return { isEncrypted: true, salt: arrayBufferToBase64(salt), iv: arrayBufferToBase64(iv), encryptedData: arrayBufferToBase64(encryptedContent) }; }
+    async function decryptData(encryptedPayload, password) { try { const salt = base64ToArrayBuffer(encryptedPayload.salt); const iv = base64ToArrayBuffer(encryptedPayload.iv); const data = base64ToArrayBuffer(encryptedPayload.encryptedData); const key = await deriveKey(password, salt); const decryptedContent = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, data); const dec = new TextDecoder(); return dec.decode(decryptedContent); } catch (e) { console.error("Decryption failed:", e); return null; } }
+    
+    function saveBackupPassword(e) {
+        e.preventDefault();
+        const newPassword = document.getElementById('backup-password').value;
+        const confirmPassword = document.getElementById('backup-password-confirm').value;
 
-    // --- ส่วน JavaScript จัดการไฟล์ที่อัปเดตแล้ว ---
-    function loadFromLocal() { const data = localStorage.getItem('accountData'); if (data) { try { const parsed = JSON.parse(data); accounts = parsed.accounts || []; currentAccount = parsed.currentAccount || null; records = parsed.records || []; accountTypes = new Map(parsed.accountTypes || []); updateAccountSelect(); if (currentAccount) { document.getElementById('accountSelect').value = currentAccount; } changeAccount(); } catch (error) { console.error("โหลดข้อมูลจาก LocalStorage ไม่สำเร็จ", error); } } updateMultiAccountSelector(); }
+        if (newPassword !== confirmPassword) {
+            alert('รหัสผ่านไม่ตรงกัน กรุณากรอกใหม่อีกครั้ง');
+            return;
+        }
+
+        backupPassword = newPassword.trim() || null;
+        saveToLocal(true); // Call saveToLocal with a flag to prevent the default alert
+        alert('บันทึกรหัสผ่านสำหรับไฟล์สำรองเรียบร้อยแล้ว');
+        document.getElementById('backup-password').value = '';
+        document.getElementById('backup-password-confirm').value = '';
+        renderBackupPasswordStatus();
+    }
+    
+    function renderBackupPasswordStatus() {
+        const statusEl = document.getElementById('password-status');
+        if (backupPassword) {
+            statusEl.textContent = 'สถานะ: มีการตั้งรหัสผ่านแล้ว';
+            statusEl.style.color = 'green';
+        } else {
+            statusEl.textContent = 'สถานะ: ยังไม่มีการตั้งรหัสผ่าน (ไฟล์สำรองจะไม่ถูกเข้ารหัส)';
+            statusEl.style.color = '#f5a623';
+        }
+    }
+    // END: CODE ที่เพิ่มเข้ามาสำหรับรหัสผ่าน
+
+    function loadFromLocal() {
+        const data = localStorage.getItem('accountData');
+        if (data) {
+            try {
+                const parsed = JSON.parse(data);
+                accounts = parsed.accounts || [];
+                currentAccount = parsed.currentAccount || null;
+                records = parsed.records || [];
+                accountTypes = new Map(parsed.accountTypes || []);
+                // --- CODE ที่เพิ่มเข้ามา ---
+                backupPassword = parsed.backupPassword || null; 
+                renderBackupPasswordStatus();
+                // --- จบส่วนที่เพิ่ม ---
+                updateAccountSelect();
+                if (currentAccount) {
+                    document.getElementById('accountSelect').value = currentAccount;
+                }
+                changeAccount();
+            } catch (error) {
+                console.error("โหลดข้อมูลจาก LocalStorage ไม่สำเร็จ", error);
+            }
+        }
+        updateMultiAccountSelector();
+    }
+
     function closeFormatModal() { document.getElementById('formatSelectionModal').style.display = 'none'; }
     function closeExportSingleAccountModal() { document.getElementById('exportSingleAccountModal').style.display = 'none'; }
     function saveToFile() { if (accounts.length === 0) { alert("ไม่มีบัญชีให้บันทึก"); return; } document.getElementById('formatSelectionModal').style.display = 'flex'; }
     
-    // --- ADJUSTED FUNCTION ---
-    function saveToLocal() {
+    function saveToLocal(fromPasswordSave = false) {
         const dataToSave = {
             accounts: [...accounts],
             currentAccount: currentAccount,
             records: [...records],
-            accountTypes: Array.from(accountTypes.entries())
+            accountTypes: Array.from(accountTypes.entries()),
+            backupPassword: backupPassword // Save password to local storage
         };
         try {
             localStorage.setItem('accountData', JSON.stringify(dataToSave));
-            alert('✓ บันทึกข้อมูลชั่วคราวในเบราว์เซอร์เรียบร้อยแล้ว');
+            if (!fromPasswordSave) { // Prevent double alert
+                 alert('✓ บันทึกข้อมูลชั่วคราวในเบราว์เซอร์เรียบร้อยแล้ว');
+            }
         } catch (error) {
             console.error("บันทึกข้อมูลชั่วคราวไม่สำเร็จ:", error);
             alert("⚠️ เกิดข้อผิดพลาดในการบันทึกข้อมูลชั่วคราว: " + error.message);
         }
     }
 
-    function handleSaveAs(format) {
-        closeFormatModal(); const formatLower = format.toLowerCase().trim(); const fileName = prompt("กรุณากรอกชื่อไฟล์สำหรับสำรองข้อมูล (ไม่ต้องใส่นามสกุล):", "backup_all"); if (!fileName) return;
-        const now = new Date(); const dateTimeString = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    async function handleSaveAs(format) {
+        closeFormatModal();
+        const formatLower = format.toLowerCase().trim();
+        const fileName = prompt("กรุณากรอกชื่อไฟล์สำหรับสำรองข้อมูล (ไม่ต้องใส่นามสกุล):", "backup_all");
+        if (!fileName) return;
+
+        const now = new Date();
+        const dateTimeString = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+
         if (formatLower === 'json') {
-            const fullFileName = `${fileName}_${dateTimeString}.json`; const data = { accounts, currentAccount, records, accountTypes: Array.from(accountTypes.entries()) };
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fullFileName; a.click(); URL.revokeObjectURL(url);
+            const fullFileName = `${fileName}_${dateTimeString}.json`;
+            const data = { accounts, currentAccount, records, accountTypes: Array.from(accountTypes.entries()), backupPassword: null }; // Exclude password from file
+            
+            let dataString = JSON.stringify(data, null, 2);
+
+            if (backupPassword) {
+                alert('กำลังเข้ารหัสข้อมูล...');
+                try {
+                    const encryptedObject = await encryptData(dataString, backupPassword);
+                    dataString = JSON.stringify(encryptedObject, null, 2);
+                } catch (e) {
+                    alert('การเข้ารหัสล้มเหลว!');
+                    return;
+                }
+            }
+            
+            const blob = new Blob([dataString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fullFileName;
+            a.click();
+            URL.revokeObjectURL(url);
             alert(`บันทึกข้อมูลทั้งหมดลงในไฟล์ "${fullFileName}" เรียบร้อยแล้ว`);
         } else if (formatLower === 'csv') {
-            const fullFileName = `${fileName}_${dateTimeString}.csv`; let csvData = []; csvData.push(['###ALL_ACCOUNTS_BACKUP_CSV###']); csvData.push(['###ACCOUNTS_LIST###', ...accounts]); csvData.push(['###ACCOUNT_TYPES_START###']);
+            // CSV saving logic remains unchanged as encryption is only for JSON
+            const fullFileName = `${fileName}_${dateTimeString}.csv`;
+            let csvData = [];
+            csvData.push(['###ALL_ACCOUNTS_BACKUP_CSV###']);
+            csvData.push(['###ACCOUNTS_LIST###', ...accounts]);
+            csvData.push(['###ACCOUNT_TYPES_START###']);
             for (const [accName, typesObj] of accountTypes.entries()) {
-                initializeAccountTypes(accName); const currentTypes = accountTypes.get(accName);
+                initializeAccountTypes(accName);
+                const currentTypes = accountTypes.get(accName);
                 if (currentTypes.รายรับ && currentTypes.รายรับ.length > 0) csvData.push([accName, 'รายรับ', ...currentTypes.รายรับ]);
                 if (currentTypes.รายจ่าย && currentTypes.รายจ่าย.length > 0) csvData.push([accName, 'รายจ่าย', ...currentTypes.รายจ่าย]);
             }
-            csvData.push(['###ACCOUNT_TYPES_END###']); csvData.push(['###DATA_START###']); csvData.push(["วันที่", "เวลา", "ประเภท", "รายละเอียด", "จำนวนเงิน (บาท)", "บัญชี"]);
+            csvData.push(['###ACCOUNT_TYPES_END###']);
+            csvData.push(['###DATA_START###']);
+            csvData.push(["วันที่", "เวลา", "ประเภท", "รายละเอียด", "จำนวนเงิน (บาท)", "บัญชี"]);
             const allSortedRecords = [...records].sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
             allSortedRecords.forEach(record => {
-                const dateTime = new Date(record.dateTime); const formattedDate = `${String(dateTime.getDate()).padStart(2, '0')}/${String(dateTime.getMonth() + 1).padStart(2, '0')}/${dateTime.getFullYear()}`; const formattedTime = `${String(dateTime.getHours()).padStart(2, '0')}.${String(dateTime.getMinutes()).padStart(2, '0')} น.`;
+                const dateTime = new Date(record.dateTime);
+                const formattedDate = `${String(dateTime.getDate()).padStart(2, '0')}/${String(dateTime.getMonth() + 1).padStart(2, '0')}/${dateTime.getFullYear()}`;
+                const formattedTime = `${String(dateTime.getHours()).padStart(2, '0')}.${String(dateTime.getMinutes()).padStart(2, '0')} น.`;
                 csvData.push([formattedDate, formattedTime, record.type, record.description, record.amount, record.account]);
             });
-            let csvContent = Papa.unparse(csvData, { header: false }); const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = fullFileName; link.click(); URL.revokeObjectURL(link.href);
+            let csvContent = Papa.unparse(csvData, { header: false });
+            const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fullFileName;
+            link.click();
+            URL.revokeObjectURL(link.href);
             alert(`บันทึกข้อมูลทั้งหมดลงในไฟล์ CSV "${fullFileName}" เรียบร้อยแล้ว`);
         }
     }
+    
     function exportSelectedAccount() { if (!currentAccount) { alert("กรุณาเลือกบัญชีที่ต้องการส่งออกก่อน"); return; } document.getElementById('exportSingleAccountModal').style.display = 'flex'; }
     function handleExportSelectedAs(format) {
         closeExportSingleAccountModal(); if (!currentAccount) { alert("เกิดข้อผิดพลาด: ไม่พบบัญชีที่เลือก"); return; }
@@ -978,7 +1076,7 @@
             alert(`ส่งออกบัญชี "${currentAccount}" เป็น JSON เรียบร้อย\n\nไฟล์: ${fullFileName}`);
         } else if (format === 'csv') {
             const fullFileName = `${fileName}_${dateTimeString}.csv`; initializeAccountTypes(currentAccount); const accountCurrentTypes = accountTypes.get(currentAccount); let excelData = [];
-            excelData.push([`ชื่อบัญชี: ${currentAccount}`]); excelData.push(['###ACCOUNT_TYPES###']); excelData.push(['รายรับ', ...(accountCurrentTypes['รายรับ'] || [])]); excelData.push(['รายจ่าย', ...(accountCurrentTypes['รายจ่าย'] || [])]); excelData.push(['###DATA_START###']); excelData.push(["วันที่", "เวลา", "ประเภท", "รายละเอียด", "จำนวนเงิน (บาท)"]);
+            excelData.push([`ชื่อบัญชี: ${currentAccount}`]); excelData.push(['###ACCOUNT_TYPES###']); excelData.push(['รายรับ', ...(accountCurrentTypes['รายรับ'] || [])]); excelData.push(['รายจ่าย', ...(accountCurrentTypes['จ่าย'] || [])]); excelData.push(['###DATA_START###']); excelData.push(["วันที่", "เวลา", "ประเภท", "รายละเอียด", "จำนวนเงิน (บาท)"]);
             const filteredRecords = records.filter(record => record.account === currentAccount).sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
             filteredRecords.forEach(record => {
                 const dateTime = new Date(record.dateTime); const formattedDate = `${String(dateTime.getDate()).padStart(2, '0')}/${String(dateTime.getMonth() + 1).padStart(2, '0')}/${dateTime.getFullYear()}`; const formattedTime = `${String(dateTime.getHours()).padStart(2, '0')}.${String(dateTime.getMinutes()).padStart(2, '0')} น.`;
@@ -988,33 +1086,83 @@
             alert(`ส่งออกบัญชี "${currentAccount}" เป็น CSV เรียบร้อย\n\nไฟล์: ${fullFileName}`);
         }
     }
+    
     function loadFromFile(event) {
-        const file = event.target.files[0]; if (!file) { return; } const reader = new FileReader(); const fileName = file.name.toLowerCase();
-        if (fileName.endsWith('.csv')) { reader.onload = (e) => loadFromCsv(e.target.result); reader.readAsText(file, 'UTF-8');
+        const file = event.target.files[0]; if (!file) { return; }
+        const reader = new FileReader();
+        const fileName = file.name.toLowerCase();
+
+        if (fileName.endsWith('.csv')) {
+            reader.onload = (e) => loadFromCsv(e.target.result);
+            reader.readAsText(file, 'UTF-8');
         } else if (fileName.endsWith('.json')) {
-            reader.onload = (e) => {
+            reader.onload = async (e) => { // Make async
                 try {
-                    const data = JSON.parse(e.target.result);
-                    if (data.accounts && Array.isArray(data.accounts)) { // All accounts backup
-                        if(confirm("ไฟล์นี้เป็นไฟล์สำรองข้อมูล JSON ทั้งหมด ต้องการโหลดข้อมูลทั้งหมดทับของเดิมหรือไม่?")) {
-                            accounts = data.accounts; records = data.records; accountTypes = new Map(data.accountTypes); currentAccount = data.currentAccount;
-                            updateAccountSelect(); if (currentAccount) document.getElementById('accountSelect').value = currentAccount; changeAccount(); alert("โหลดข้อมูลทั้งหมดจาก JSON สำเร็จ");
+                    const importedData = JSON.parse(e.target.result);
+                    let finalDataToMerge = null;
+
+                    // Check if the file is encrypted
+                    if (importedData && importedData.isEncrypted === true) {
+                        const password = prompt("ไฟล์นี้ถูกเข้ารหัส กรุณากรอกรหัสผ่านเพื่อถอดรหัส:");
+                        if (!password) {
+                            alert("ยกเลิกการนำเข้าไฟล์");
+                            event.target.value = '';
+                            return;
                         }
-                    } else if (data.accountName) { // Single account
-                        const confirmMsg = `ไฟล์นี้เป็นข้อมูลของบัญชี "${data.accountName}"\n\nกด OK เพื่อ "แทนที่" ข้อมูลทั้งหมดของบัญชีนี้\nกด Cancel เพื่อยกเลิก`;
+                        alert('กำลังถอดรหัส...');
+                        const decryptedString = await decryptData(importedData, password);
+                        if (decryptedString) {
+                            finalDataToMerge = JSON.parse(decryptedString);
+                            alert('ถอดรหัสสำเร็จ!');
+                        } else {
+                            alert("ถอดรหัสล้มเหลว! รหัสผ่านอาจไม่ถูกต้อง");
+                            event.target.value = '';
+                            return;
+                        }
+                    } else {
+                        finalDataToMerge = importedData;
+                    }
+
+                    // Proceed with merging the final data
+                    if (finalDataToMerge.accounts && Array.isArray(finalDataToMerge.accounts)) { // All accounts backup
+                        if(confirm("ไฟล์นี้เป็นไฟล์สำรองข้อมูล JSON ทั้งหมด ต้องการโหลดข้อมูลทั้งหมดทับของเดิมหรือไม่?")) {
+                            accounts = finalDataToMerge.accounts;
+                            records = finalDataToMerge.records;
+                            accountTypes = new Map(finalDataToMerge.accountTypes);
+                            currentAccount = finalDataToMerge.currentAccount;
+                            updateAccountSelect();
+                            if (currentAccount) document.getElementById('accountSelect').value = currentAccount;
+                            changeAccount();
+                            alert("โหลดข้อมูลทั้งหมดจาก JSON สำเร็จ");
+                        }
+                    } else if (finalDataToMerge.accountName) { // Single account
+                        const confirmMsg = `ไฟล์นี้เป็นข้อมูลของบัญชี "${finalDataToMerge.accountName}"\n\nกด OK เพื่อ "แทนที่" ข้อมูลทั้งหมดของบัญชีนี้\nกด Cancel เพื่อยกเลิก`;
                         if (confirm(confirmMsg)) {
-                            if (!accounts.includes(data.accountName)) accounts.push(data.accountName); records = records.filter(r => r.account !== data.accountName); records.push(...(data.records || []));
-                            accountTypes.set(data.accountName, data.accountTypes || { "รายรับ": [], "รายจ่าย": [] }); currentAccount = data.accountName;
-                            updateAccountSelect(); document.getElementById('accountSelect').value = currentAccount; changeAccount(); saveToLocal(); alert(`แทนที่ข้อมูลบัญชี "${data.accountName}" สำเร็จ`);
+                            if (!accounts.includes(finalDataToMerge.accountName)) accounts.push(finalDataToMerge.accountName);
+                            records = records.filter(r => r.account !== finalDataToMerge.accountName);
+                            records.push(...(finalDataToMerge.records || []));
+                            accountTypes.set(finalDataToMerge.accountName, finalDataToMerge.accountTypes || { "รายรับ": [], "รายจ่าย": [] });
+                            currentAccount = finalDataToMerge.accountName;
+                            updateAccountSelect();
+                            document.getElementById('accountSelect').value = currentAccount;
+                            changeAccount();
+                            saveToLocal();
+                            alert(`แทนที่ข้อมูลบัญชี "${finalDataToMerge.accountName}" สำเร็จ`);
                         }
                     } else { throw new Error("รูปแบบไฟล์ JSON ไม่ถูกต้อง"); }
                     updateMultiAccountSelector();
-                } catch (error) { alert("ไฟล์ JSON ไม่ถูกต้องหรือเสียหาย: " + error.message); }
+                } catch (error) {
+                    alert("ไฟล์ JSON ไม่ถูกต้องหรือเสียหาย: " + error.message);
+                }
             };
             reader.readAsText(file);
-        } else { alert("กรุณาเลือกไฟล์ .json หรือ .csv เท่านั้น"); }
-        reader.onerror = () => alert("เกิดข้อผิดพลาดในการอ่านไฟล์"); event.target.value = '';
+        } else {
+            alert("กรุณาเลือกไฟล์ .json หรือ .csv เท่านั้น");
+        }
+        reader.onerror = () => alert("เกิดข้อผิดพลาดในการอ่านไฟล์");
+        event.target.value = ''; // Reset file input
     }
+    
     function loadFromCsv(csvText) {
         let isFullBackup = false; let isFirstRow = true; let newFullAccounts = []; let newFullRecords = []; let newFullAccountTypes = new Map(); let importAccountName = ''; let importedTypes = { "รายรับ": [], "รายจ่าย": [] }; let newRecords = []; let inTypesSection = false; let inDataSection = false; let isDataHeaderRow = true;
         Papa.parse(csvText, {
@@ -1072,7 +1220,30 @@
 
     function hideInstallPrompt() { const installGuide = document.getElementById('install-guide'); if (installGuide) { installGuide.style.display = 'none'; } }
     window.addEventListener('appinstalled', () => { console.log('App was installed.'); hideInstallPrompt(); localStorage.setItem('pwa_installed', 'true'); });
-    window.onload = function () { document.getElementById('detailsSection').style.display = 'none'; loadFromLocal(); toggleSection('account-section'); window.addEventListener('click', (event) => { const modal = document.getElementById('summaryModal'); if (event.target == modal) { closeSummaryModal(); } }); if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || localStorage.getItem('pwa_installed') === 'true') { hideInstallPrompt(); } };
+    
+    window.onload = function () {
+        document.getElementById('detailsSection').style.display = 'none';
+        loadFromLocal();
+        toggleSection('account-section');
+        
+        // Add event listeners for new elements
+        document.getElementById('backup-password-form').addEventListener('submit', saveBackupPassword);
+        document.getElementById('show-backup-password').addEventListener('change', (e) => {
+            document.getElementById('backup-password').type = e.target.checked ? 'text' : 'password';
+            document.getElementById('backup-password-confirm').type = e.target.checked ? 'text' : 'password';
+        });
+
+        window.addEventListener('click', (event) => {
+            const modal = document.getElementById('summaryModal');
+            if (event.target == modal) {
+                closeSummaryModal();
+            }
+        });
+        
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || localStorage.getItem('pwa_installed') === 'true') {
+            hideInstallPrompt();
+        }
+    };
 </script>
 
 <!-- Script สำหรับลงทะเบียน Service Worker -->
