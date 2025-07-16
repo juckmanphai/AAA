@@ -1066,27 +1066,84 @@
     }
     
     function exportSelectedAccount() { if (!currentAccount) { alert("กรุณาเลือกบัญชีที่ต้องการส่งออกก่อน"); return; } document.getElementById('exportSingleAccountModal').style.display = 'flex'; }
-    function handleExportSelectedAs(format) {
-        closeExportSingleAccountModal(); if (!currentAccount) { alert("เกิดข้อผิดพลาด: ไม่พบบัญชีที่เลือก"); return; }
-        const fileName = prompt(`กรุณากรอกชื่อไฟล์สำหรับบัญชี ${currentAccount} (ไม่ต้องใส่นามสกุล):`, currentAccount); if (!fileName) return;
-        const now = new Date(); const dateTimeString = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+    
+    // --- START: โค้ดที่อัปเดต ---
+    async function handleExportSelectedAs(format) {
+        closeExportSingleAccountModal();
+        if (!currentAccount) {
+            alert("เกิดข้อผิดพลาด: ไม่พบบัญชีที่เลือก");
+            return;
+        }
+        const fileName = prompt(`กรุณากรอกชื่อไฟล์สำหรับบัญชี ${currentAccount} (ไม่ต้องใส่นามสกุล):`, currentAccount);
+        if (!fileName) return;
+
+        const now = new Date();
+        const dateTimeString = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+
         if (format === 'json') {
-            const fullFileName = `${fileName}_${dateTimeString}.json`; const accountData = { accountName: currentAccount, records: records.filter(record => record.account === currentAccount), accountTypes: accountTypes.get(currentAccount) || { "รายรับ": [], "รายจ่าย": [] } };
-            const blob = new Blob([JSON.stringify(accountData, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fullFileName; a.click(); URL.revokeObjectURL(url);
+            const fullFileName = `${fileName}_${dateTimeString}.json`;
+            const accountData = {
+                accountName: currentAccount,
+                records: records.filter(record => record.account === currentAccount),
+                accountTypes: accountTypes.get(currentAccount) || { "รายรับ": [], "รายจ่าย": [] }
+            };
+
+            let dataString = JSON.stringify(accountData, null, 2);
+
+            if (backupPassword) {
+                alert('กำลังเข้ารหัสข้อมูล...');
+                try {
+                    const encryptedObject = await encryptData(dataString, backupPassword);
+                    dataString = JSON.stringify(encryptedObject, null, 2);
+                } catch (e) {
+                    alert('การเข้ารหัสล้มเหลว!');
+                    return;
+                }
+            }
+
+            const blob = new Blob([dataString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fullFileName;
+            a.click();
+            URL.revokeObjectURL(url);
             alert(`ส่งออกบัญชี "${currentAccount}" เป็น JSON เรียบร้อย\n\nไฟล์: ${fullFileName}`);
+
         } else if (format === 'csv') {
-            const fullFileName = `${fileName}_${dateTimeString}.csv`; initializeAccountTypes(currentAccount); const accountCurrentTypes = accountTypes.get(currentAccount); let excelData = [];
-            excelData.push([`ชื่อบัญชี: ${currentAccount}`]); excelData.push(['###ACCOUNT_TYPES###']); excelData.push(['รายรับ', ...(accountCurrentTypes['รายรับ'] || [])]); excelData.push(['รายจ่าย', ...(accountCurrentTypes['จ่าย'] || [])]); excelData.push(['###DATA_START###']); excelData.push(["วันที่", "เวลา", "ประเภท", "รายละเอียด", "จำนวนเงิน (บาท)"]);
+            const fullFileName = `${fileName}_${dateTimeString}.csv`;
+            initializeAccountTypes(currentAccount);
+            const accountCurrentTypes = accountTypes.get(currentAccount);
+            let excelData = [];
+            excelData.push([`ชื่อบัญชี: ${currentAccount}`]);
+            excelData.push(['###ACCOUNT_TYPES###']);
+            excelData.push(['รายรับ', ...(accountCurrentTypes['รายรับ'] || [])]);
+            excelData.push(['รายจ่าย', ...(accountCurrentTypes['จ่าย'] || [])]);
+            excelData.push(['###DATA_START###']);
+            excelData.push(["วันที่", "เวลา", "ประเภท", "รายละเอียด", "จำนวนเงิน (บาท)"]);
+
             const filteredRecords = records.filter(record => record.account === currentAccount).sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
             filteredRecords.forEach(record => {
-                const dateTime = new Date(record.dateTime); const formattedDate = `${String(dateTime.getDate()).padStart(2, '0')}/${String(dateTime.getMonth() + 1).padStart(2, '0')}/${dateTime.getFullYear()}`; const formattedTime = `${String(dateTime.getHours()).padStart(2, '0')}.${String(dateTime.getMinutes()).padStart(2, '0')} น.`;
+                const dateTime = new Date(record.dateTime);
+                const formattedDate = `${String(dateTime.getDate()).padStart(2, '0')}/${String(dateTime.getMonth() + 1).padStart(2, '0')}/${dateTime.getFullYear()}`;
+                const formattedTime = `${String(dateTime.getHours()).padStart(2, '0')}.${String(dateTime.getMinutes()).padStart(2, '0')} น.`;
                 excelData.push([formattedDate, formattedTime, record.type, record.description, record.amount]);
             });
-            let csvContent = Papa.unparse(excelData, { header: false }); const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" }); const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = fullFileName; link.click(); document.body.removeChild(link);
+
+            let csvContent = Papa.unparse(excelData, { header: false });
+            const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fullFileName;
+            link.click();
+            // Using a more robust way to handle the link removal
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
             alert(`ส่งออกบัญชี "${currentAccount}" เป็น CSV เรียบร้อย\n\nไฟล์: ${fullFileName}`);
         }
     }
-    
+    // --- END: โค้ดที่อัปเดต ---
+
     function loadFromFile(event) {
         const file = event.target.files[0]; if (!file) { return; }
         const reader = new FileReader();
