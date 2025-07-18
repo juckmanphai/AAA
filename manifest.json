@@ -1,9 +1,9 @@
 {
-  "name": "บัญชีส่วนตัว",
+  "name": "บัญชี",
   "short_name": "บัญชี",
   "description": "แอปพลิเคชันรายรับราจ่ายส่วนตัว",
   "start_url": "./index.html",
-  "id": "/lotto/",
+  "id": "/Ac/",
   "display": "standalone",
   "background_color": "#FAFAD2",
   "theme_color": "#4a90e2",
