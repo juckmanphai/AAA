@@ -22,7 +22,7 @@
     body { font-family: Arial, sans-serif; background-color: #f4f7fb; margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; text-size-adjust: 100%; }
     h2 { text-align: center; color: #333; margin-top: 30px; font-size: 28px; }
     .container { max-width: 800px; margin: 20px auto; background-color: #FAFAD2; border: 2px solid #ED01ED; padding: 10px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); width: 95%; }
-    .section-header { background-color: #4CAF50; color: white; padding: 12px 15px; border-radius: 20px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .section-header { background-color: #4CAF50; color: white; padding: 12px 15px; border-radius: 2px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
     .section-header:hover { background-color: #45a049; }
     .section-header .arrow { transition: transform 0.3s; }
     .section-header.active .arrow { transform: rotate(90deg); }
@@ -38,7 +38,7 @@
     .header-summary:hover { background-color: #B5E6A2; }
     .section-content { display: none; padding: 15px; border: 1px solid #ddd; border-radius: 20px; background-color: #f9f9f9; margin-bottom: 15px; }
     .section-content.active { display: block; }
-    .sub-section-header { background-color: #ff9800; color: white; margin-top: 20px; }
+    .sub-section-header { background-color: #FF9BCD; color: white; margin-top: 20px; border-radius: 15px; padding-top: 8px; padding-bottom: 8px; }
     .sub-section-header:hover { background-color: #fb8c00; }
     .sub-section-content { border: none; background-color: transparent; padding: 10px 0 0 0; margin-bottom: 0; }
     .entry-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
@@ -53,7 +53,7 @@
     .back-button:hover { background-color: #e64a19; }
     .file-button { background-color: #007bff; }
     .file-button:hover { background-color: #0056b3; }
-    .button-group button, .button-container button { padding: 12px; font-size: 16px; border: none; border-radius: 50px; background-color: #4caf50; color: white; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
+    .button-group button, .button-container button { padding: 8px; font-size: 16px; border: none; border-radius: 15px; background-color: #4caf50; color: white; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
     .button-group button:hover, .button-container button:hover { background-color: #45a049; transform: translateY(-2px); }
     #recordTable { width: 100%; border-collapse: collapse; margin: 10px auto; }
     #recordTable th, #recordTable td { border: 1px solid #ccc; padding: 8px; line-height: 1.0; text-align: center; word-break: break-word; }
@@ -94,6 +94,15 @@
     .format-modal-buttons .btn-cancel:hover { background-color: #5a6268; }
     .format-modal-buttons .btn-display { background-color: #007bff; }
     .format-modal-buttons .btn-display:hover { background-color: #0056b3; }
+.header-import {
+    background-color: #a7dca5; /* สีเขียวอ่อน */
+    border-radius: 15px;      /* ลดความโค้งของขอบ ทำให้ดูเหลี่ยมขึ้น */
+    padding-top: 8px;       /* ปรับความสูง (ลดช่องว่างด้านบน) */
+    padding-bottom: 8px;    /* ปรับความสูง (ลดช่องว่างด้านล่าง) */
+}
+.header-import:hover {
+    background-color: #96c494; /* สีเขียวจะเข้มขึ้นเล็กน้อยเมื่อเมาส์ชี้ */
+}
     @media screen and (max-width: 600px) { .container { padding: 5px; } h2 { font-size: 24px; } .entry-form, .button-group, .button-container { grid-template-columns: 1fr; } .sub-section-content .button-group { grid-template-columns: repeat(3, 1fr); gap: 5px; } .sub-section-content .button-group button { padding: 10px 5px; font-size: 14px; } .button-group button, .button-container button { padding: 14px; font-size: 16px; } .file-actions { flex-direction: column; padding: 0 10px; align-items: stretch; } .file-actions button { width: 100%; max-width: none; } .back-button { width: 100%; } }
   </style>
 </head>
@@ -121,7 +130,7 @@
                 <input type="file" id="fileInput" onchange="loadFromFile(event)" style="display: none;" accept=".json,application/json,.csv,text/csv">
                 <button type="button" onclick="document.getElementById('fileInput').click()" 
                         class="action-button" 
-                         style="width: 100%; height: 45px; padding: 10px; font-size: 16px; background-color: #196B24; color: #FFFFFF; border: 2px solid #EE0000; border-radius: 30px; cursor: pointer; margin: 0 auto;">
+                         style="width: 100%; height: 50px; padding: 5px; font-size: 16px; background-color: #196B24; color: #FFFFFF; border: 2px solid #EE0000; border-radius: 5px; cursor: pointer; margin: 0 auto;">
                   โหลดข้อมูลบัญชี
                 </button>
         </div>
@@ -138,7 +147,7 @@
             <label for="accountSelect">เลือกบัญชี:</label>
             <select id="accountSelect" onchange="changeAccount()"></select>
             
-            <div class="section-header sub-section-header" onclick="toggleSection('manage-account-submenu')">
+            <div class="section-header header-import" onclick="toggleSection('manage-account-submenu')">
               <span>จัดการบัญชี</span>
               <span class="arrow">▶</span>
             </div>
@@ -175,7 +184,7 @@
               <input list="typeList" id="type" required placeholder="เลือกหรือพิมพ์ประเภท" style="height: 40px;" onfocus="showAllTypes(this)" onblur="restoreType(this)">
               <datalist id="typeList"></datalist>
               
-              <div class="section-header sub-section-header" onclick="toggleSection('manage-types-submenu')" style="margin-top:10px;">
+              <div class="section-header header-import" onclick="toggleSection('manage-types-submenu')" style="margin-top:10px;">
                 <span>จัดการประเภท</span>
                 <span class="arrow">▶</span>
               </div>
@@ -192,11 +201,10 @@
               <input type="text" id="description" required>
             </div>
             
-            <div class="entry-group" style="margin-top: 10px;">
-                <div class="section-header sub-section-header" onclick="toggleSection('import-from-account-submenu')">
-                    <span>เติมข้อมูลจากบัญชีอื่น</span>
-                    <span class="arrow">▶</span>
-                </div>
+<div class="section-header header-import" onclick="toggleSection('import-from-account-submenu')">
+    <span>เติมข้อมูลจากบัญชีอื่น</span>
+    <span class="arrow">▶</span>
+</div>
                 <div id="import-from-account-submenu" class="section-content sub-section-content">
                     <div class="entry-form">
                         <div class="entry-group">
@@ -212,10 +220,9 @@
                         <button type="button" onclick="importEntriesFromAccount()" style="background-color: #673ab7;">ดึงข้อมูลมาเติม</button>
                     </div>
                 </div>
-            </div>
 
             <div class="entry-group" id="multiAccountSelector" style="display: none; margin-top: 10px;">
-                <div class="section-header sub-section-header" onclick="toggleSection('multi-account-submenu')">
+                <div class="section-header header-import" onclick="toggleSection('multi-account-submenu')">
                     <span>เพิ่มรายการนี้ในบัญชีอื่นด้วย</span>
                     <span class="arrow">▶</span>
                 </div>
