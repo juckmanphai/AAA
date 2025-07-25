@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -27,7 +28,7 @@
     .section-header .arrow { transition: transform 0.3s; }
     .section-header.active .arrow { transform: rotate(90deg); }
     .section-header > span:first-child { flex: 1; text-align: center; }
-    .header-account, .header-add-data, .header-actions, .header-summary { border: 3px solid #E97132; }
+    .header-account, .header-add-data, .header-actions, .header-summary { border: 2px solid #E97132; }
     .header-account { background-color: #0070C0; }
     .header-account:hover { background-color: #B5E6A2; }
     .header-add-data { background-color: #00B0F0; }
@@ -61,7 +62,7 @@
     #recordTable tr:nth-child(even) { background-color: #f9f9f9; }
     #recordTable tr:hover { background-color: #f1f1f1; }
     /* --- CSS ที่ปรับคืนตามต้นฉบับ --- */
-    .summaryResult { font-size: clamp(12px, 2.2vw, 15px); font-weight: normal; color: blue; background-color: #FAFAD2; border: 3px solid #4CAF50; border-radius: 5px; padding: 5px; width: 100%; margin: 0; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); line-height: 0.5; }
+    .summaryResult { font-size: clamp(12px, 2.2vw, 15px); font-weight: normal; color: blue; background-color: #FAFAD2; border: 1px solid #4CAF50; border-radius: 5px; padding: 5px; width: 100%; margin: 0; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); line-height: 0.5; }
     .summaryResult table td, .summaryResult table th { line-height: 0.5; }
     .file-actions { display: flex; gap: 10px; align-items: center; }
     .action-button { padding: 10px 20px; height: 40px; min-width: 150px; border: none; border-radius: 20px; color: white; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
@@ -75,7 +76,24 @@
     .summary-subsection { border-top: 1px solid #ccc; margin-top: 15px; padding-top: 15px; }
     .summary-subsection:first-child { border-top: none; margin-top: 0; padding-top: 0; }
     .summary-subsection-header { display: block; margin-bottom: 10px; font-weight: bold; font-size: 1.1em; color: #0056b3; }
-    .modal-overlay { position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; padding: 5px; overflow-y: auto; }
+    
+    /* === START: CSS ที่ปรับปรุงสำหรับ POPUP === */
+    .modal-overlay { 
+        position: fixed; 
+        z-index: 1000; 
+        left: 0; 
+        top: 0; 
+        width: 100%; 
+        height: 100%; 
+        background-color: #fffde7; /* เปลี่ยนพื้นหลังเป็นสีเหลืองอ่อนตามไฟล์ 02.html */
+        display: none; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 5px; /* เพิ่มระยะห่างรอบๆ */
+        overflow-y: auto; 
+    }
+    /* === END: CSS ที่ปรับปรุงสำหรับ POPUP === */
+
     .modal-content-container { background-color: transparent; padding: 0; border: none; box-shadow: none; display: flex; flex-direction: column; align-items: center; margin: auto 0; width: 100%; max-width: 800px; }
     .modal-close-btn { background-color: #E97132; color: white; padding: 12px 30px; border: none; cursor: pointer; border-radius: 20px; font-size: 16px; margin-top: 10px; transition: background-color 0.3s; }
     .modal-close-btn:hover { background-color: #e64a19; }
