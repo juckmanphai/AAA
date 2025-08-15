@@ -63,7 +63,20 @@
     #recordTable tr:nth-child(even) { background-color: #f9f9f9; }
     #recordTable tr:hover { background-color: #f1f1f1; }
     /* --- CSS ที่ปรับคืนตามต้นฉบับ --- */
-    .summaryResult { font-size: clamp(12px, 2.2vw, 15px); font-weight: normal; color: blue; background-color: #FAFAD2; border: 1px solid #4CAF50; border-radius: 5px; padding: 15px; width: 100%; margin: 0; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.25); line-height: 1.5; }
+    .summaryResult { 
+    font-size: clamp(12px, 2.2vw, 15px); 
+    font-weight: normal; 
+    color: blue; 
+    background-color: #FAFAD2; 
+    border: 1px solid #4CAF50; 
+    border-radius: 5px; 
+    padding: 15px 5px; /* <-- แก้ไขเรียบร้อย */
+    width: 100%; 
+    margin: 0; 
+    text-align: center; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25); 
+    line-height: 0.5; 
+}
     .summaryResult table td, .summaryResult table th { line-height: 1.2; }
     .file-actions { display: flex; gap: 10px; align-items: center; }
     .action-button { padding: 10px 20px; height: 40px; min-width: 150px; border: none; border-radius: 20px; color: white; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
@@ -689,6 +702,12 @@
             // Temporarily hide controls for capture
             if (controlsElement) controlsElement.style.display = 'none';
 
+            // --- START: ส่วนที่เพิ่มเข้ามา ---
+            // ปรับ padding ด้านข้างให้เล็กลงชั่วคราวก่อนถ่ายภาพ
+            // (15px คือ บน-ล่าง, 5px คือ ซ้าย-ขวา) คุณสามารถปรับเลข 5px ได้ตามต้องการ
+            modalContentContainer.style.padding = '15px 5px';
+            // --- END: ส่วนที่เพิ่มเข้ามา ---
+
             html2canvas(modalContentContainer, {
                 useCORS: true,
                 scale: 2, // Higher resolution
@@ -705,9 +724,13 @@
             }).finally(() => {
                 // Show controls again
                 if (controlsElement) controlsElement.style.display = '';
+                
+                // --- START: ส่วนที่เพิ่มเข้ามา ---
+                // ล้างค่า style ที่เราใส่เข้าไป เพื่อให้ padding กลับไปเป็นค่าเดิมจาก CSS
+                modalContentContainer.style.padding = '';
+                // --- END: ส่วนที่เพิ่มเข้ามา ---
             });
-        });
-        
+        });        
         // Initial setup
         updateFontSize();
         updateLineHeight();
