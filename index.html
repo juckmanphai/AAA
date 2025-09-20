@@ -1977,78 +1977,246 @@ function saveToFile() {
         event.target.value = '';
     }
     
-    function loadFromCsv(csvText) {
-        let csvImportData = { isFullBackup: false, isDailyExport: false, accountName: '', exportDate: '', types: { "รายรับ": [], "รายจ่าย": [] }, records: [] };
-        let inTypesSection = false;
-        let inDataSection = false;
-        let dataHeaderPassed = false;
-        Papa.parse(csvText, {
-            skipEmptyLines: true,
-            step: function(results) {
-                const row = results.data;
-                const firstCell = (row[0] || '').trim();
-                if (firstCell === '###ALL_ACCOUNTS_BACKUP_CSV###') { csvImportData.isFullBackup = true; return; }
-                if (firstCell.startsWith('isDailyExport:')) { csvImportData.isDailyExport = true; return; }
-                if (firstCell.startsWith('exportDate:')) { csvImportData.exportDate = firstCell.split(':')[1].trim(); return; }
-                if (csvImportData.isFullBackup) {
-                } else {
-                    if (firstCell.startsWith('ชื่อบัญชี:')) {
-                        csvImportData.accountName = firstCell.split(':')[1].trim();
-                    } else if (firstCell === '###ACCOUNT_TYPES###') {
-                        inTypesSection = true; inDataSection = false;
-                    } else if (firstCell === '###DATA_START###') {
-                        inTypesSection = false; inDataSection = true; dataHeaderPassed = false;
-                    } else if (inTypesSection) {
-                        if (firstCell === 'รายรับ') csvImportData.types['รายรับ'] = row.slice(1).filter(Boolean);
-                        if (firstCell === 'รายจ่าย') csvImportData.types['รายจ่าย'] = row.slice(1).filter(Boolean);
-                    } else if (inDataSection) {
-                        if (!dataHeaderPassed) { dataHeaderPassed = true; return; }
-                        const [dateStr, timeStr, type, description, amountStr] = row;
-                        try {
-                             if (!dateStr || !timeStr || !type || !amountStr) throw new Error("ข้อมูลไม่ครบถ้วน");
-                             const [day, month, year] = dateStr.trim().split('/'); if(!day || !month || !year) throw new Error("รูปแบบวันที่ไม่ถูกต้อง");
-                             const fDate = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-                             const fTime = timeStr.trim().replace(' น.', '').replace('.', ':');
-                             const amount = parseFloat(String(amountStr).replace(/,/g, ''));
-                             if(isNaN(amount)) throw new Error("จำนวนเงินไม่ถูกต้อง");
-                             csvImportData.records.push({ dateTime: `${fDate} ${fTime}`, type: type.trim(), description: (description||'').trim(), amount, account: csvImportData.accountName });
-                        } catch (e) { console.warn(`ข้ามแถวข้อมูล CSV ที่มีปัญหา: ${e.message}`, row); }
+function loadFromCsv(csvText) {
+    let csvImportData = { isFullBackup: false, isDailyExport: false, accountName: '', exportDate: '', types: { "รายรับ": [], "รายจ่าย": [] }, records: [] };
+    let inTypesSection = false;
+    let inDataSection = false;
+    let dataHeaderPassed = false;
+    
+    // ใช้ Papa Parse เพื่อแยกวิเคราะห์ CSV
+    Papa.parse(csvText, {
+        skipEmptyLines: true,
+        step: function(results) {
+            const row = results.data;
+            const firstCell = (row[0] || '').trim();
+            
+            if (firstCell === '###ALL_ACCOUNTS_BACKUP_CSV###') {
+                csvImportData.isFullBackup = true;
+                return;
+            }
+            
+            if (firstCell.startsWith('isDailyExport:')) {
+                csvImportData.isDailyExport = true;
+                csvImportData.exportDate = firstCell.split(':')[1].trim();
+                return;
+            }
+            
+            if (csvImportData.isFullBackup) {
+                // กรณีไฟล์ CSV แบบเต็ม (ทุกบัญชี)
+                if (firstCell === '###ACCOUNTS_LIST###') {
+                    // อ่านรายการบัญชี
+                    csvImportData.accounts = row.slice(1).filter(Boolean);
+                } else if (firstCell === '###ACCOUNT_TYPES_START###') {
+                    inTypesSection = true;
+                } else if (firstCell === '###ACCOUNT_TYPES_END###') {
+                    inTypesSection = false;
+                } else if (firstCell === '###DATA_START###') {
+                    inDataSection = true;
+                    dataHeaderPassed = false;
+                } else if (inTypesSection) {
+                    // อ่านข้อมูลประเภทบัญชี
+                    const accName = row[0];
+                    const category = row[1];
+                    const types = row.slice(2).filter(Boolean);
+                    
+                    if (accName && category && types.length > 0) {
+                        if (!csvImportData.typesMap) csvImportData.typesMap = new Map();
+                        if (!csvImportData.typesMap.has(accName)) {
+                            csvImportData.typesMap.set(accName, { "รายรับ": [], "รายจ่าย": [] });
+                        }
+                        
+                        if (category === 'รายรับ') {
+                            csvImportData.typesMap.get(accName)["รายรับ"] = types;
+                        } else if (category === 'รายจ่าย') {
+                            csvImportData.typesMap.get(accName)["รายจ่าย"] = types;
+                        }
+                    }
+                } else if (inDataSection) {
+                    // อ่านข้อมูลธุรกรรม
+                    if (!dataHeaderPassed) {
+                        dataHeaderPassed = true;
+                        return;
+                    }
+                    
+                    try {
+                        const [dateStr, timeStr, type, description, amountStr, account] = row;
+                        if (!dateStr || !timeStr || !type || !amountStr || !account) {
+                            throw new Error("ข้อมูลไม่ครบถ้วน");
+                        }
+                        
+                        // แปลงรูปแบบวันที่
+                        const [day, month, year] = dateStr.split('/');
+                        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                        
+                        // แปลงรูปแบบเวลา
+                        const formattedTime = timeStr.replace(' น.', '').replace('.', ':');
+                        
+                        const amount = parseFloat(amountStr.replace(/,/g, ''));
+                        if (isNaN(amount)) throw new Error("จำนวนเงินไม่ถูกต้อง");
+                        
+                        csvImportData.records.push({
+                            dateTime: `${formattedDate} ${formattedTime}`,
+                            type: type.trim(),
+                            description: (description || '').trim(),
+                            amount,
+                            account: account.trim()
+                        });
+                    } catch (e) {
+                        console.warn(`ข้ามแถวข้อมูล CSV ที่มีปัญหา: ${e.message}`, row);
                     }
                 }
-            },
-            complete: function() {
-                if (csvImportData.isDailyExport) {
-                    const { accountName, exportDate, records: recordsToAdd } = csvImportData;
-                    const confirmMsg = `ไฟล์ CSV นี้มีข้อมูลของวันที่ ${exportDate} จำนวน ${recordsToAdd.length} รายการ สำหรับบัญชี "${accountName}"\n\nกด OK เพื่อ "เพิ่ม" รายการเหล่านี้ (ข้อมูลซ้ำจะถูกข้าม)`;
-                    if (confirm(confirmMsg)) {
-                        if (!accounts.includes(accountName)) { accounts.push(accountName); }
-                        let addedCount = 0, skippedCount = 0;
-                        recordsToAdd.forEach(rec => {
-                            const isDup = records.some(ex => ex.account===accountName && ex.dateTime===rec.dateTime && ex.amount===rec.amount && ex.description===rec.description && ex.type===rec.type);
-                            if (!isDup) { records.push(rec); addedCount++; } else { skippedCount++; }
+            } else {
+                // กรณีไฟล์ CSV แบบบัญชีเดียวหรือรายวัน
+                if (firstCell.startsWith('ชื่อบัญชี:')) {
+                    csvImportData.accountName = firstCell.split(':')[1].trim();
+                } else if (firstCell === '###ACCOUNT_TYPES###') {
+                    inTypesSection = true;
+                    inDataSection = false;
+                } else if (firstCell === '###DATA_START###') {
+                    inTypesSection = false;
+                    inDataSection = true;
+                    dataHeaderPassed = false;
+                } else if (inTypesSection) {
+                    if (firstCell === 'รายรับ') {
+                        csvImportData.types['รายรับ'] = row.slice(1).filter(Boolean);
+                    } else if (firstCell === 'รายจ่าย') {
+                        csvImportData.types['รายจ่าย'] = row.slice(1).filter(Boolean);
+                    }
+                } else if (inDataSection) {
+                    if (!dataHeaderPassed) {
+                        dataHeaderPassed = true;
+                        return;
+                    }
+                    
+                    const [dateStr, timeStr, type, description, amountStr] = row;
+                    try {
+                        if (!dateStr || !timeStr || !type || !amountStr) {
+                            throw new Error("ข้อมูลไม่ครบถ้วน");
+                        }
+                        
+                        // แปลงรูปแบบวันที่
+                        const [day, month, year] = dateStr.split('/');
+                        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                        
+                        // แปลงรูปแบบเวลา
+                        const formattedTime = timeStr.replace(' น.', '').replace('.', ':');
+                        
+                        const amount = parseFloat(amountStr.replace(/,/g, ''));
+                        if (isNaN(amount)) throw new Error("จำนวนเงินไม่ถูกต้อง");
+                        
+                        csvImportData.records.push({
+                            dateTime: `${formattedDate} ${formattedTime}`,
+                            type: type.trim(),
+                            description: (description || '').trim(),
+                            amount,
+                            account: csvImportData.accountName
                         });
-                        currentAccount = accountName;
-                        alert(`เติมข้อมูลสำเร็จ!\nเพิ่ม ${addedCount} รายการใหม่\nข้าม ${skippedCount} รายการที่ซ้ำซ้อน`);
-                        updateAccountSelect(); document.getElementById('accountSelect').value = currentAccount; changeAccount(); saveToLocal();
+                    } catch (e) {
+                        console.warn(`ข้ามแถวข้อมูล CSV ที่มีปัญหา: ${e.message}`, row);
                     }
-                } else if (csvImportData.accountName) {
-                    const { accountName, records: newRecords, types: importedTypes } = csvImportData;
-                     const confirmMsg = `คุณต้องการ "แทนที่" ข้อมูลทั้งหมดในบัญชี "${accountName}" ด้วยข้อมูล ${newRecords.length} รายการจากไฟล์ CSV นี้ใช่หรือไม่?\n\nคำเตือน: ข้อมูลเดิมในบัญชีนี้จะถูกลบทั้งหมด!`;
-                    if (confirm(confirmMsg)) {
-                        if (!accounts.includes(accountName)) accounts.push(accountName);
-                        records = records.filter(r => r.account !== accountName);
-                        records.push(...newRecords);
-                        accountTypes.set(accountName, importedTypes);
-                        currentAccount = accountName;
-                        alert(`แทนที่ข้อมูลบัญชี "${accountName}" สำเร็จ!`);
-                        updateAccountSelect(); document.getElementById('accountSelect').value = currentAccount; changeAccount(); saveToLocal();
-                    }
-                } else {
-                    alert('ไม่สามารถประมวลผลไฟล์ CSV ได้ รูปแบบอาจไม่ถูกต้อง');
                 }
             }
-        });
-    }
+        },
+        complete: function() {
+            if (csvImportData.isFullBackup) {
+                // กรณีไฟล์ CSV แบบเต็ม
+                const confirmMsg = "ไฟล์นี้เป็นไฟล์สำรองข้อมูล CSV ทั้งหมด ต้องการโหลดข้อมูลทั้งหมดทับของเดิมหรือไม่?";
+                if (confirm(confirmMsg)) {
+                    // อัปเดต accounts
+                    accounts = csvImportData.accounts || [];
+                    
+                    // อัปเดต accountTypes
+                    if (csvImportData.typesMap) {
+                        accountTypes = csvImportData.typesMap;
+                    }
+                    
+                    // อัปเดต records
+                    records = csvImportData.records;
+                    
+                    // ตั้งค่าบัญชีปัจจุบันเป็นบัญชีแรก (ถ้ามี)
+                    currentAccount = accounts.length > 0 ? accounts[0] : null;
+                    
+                    // อัปเดต UI
+                    updateAccountSelect();
+                    if (currentAccount) {
+                        document.getElementById('accountSelect').value = currentAccount;
+                    }
+                    changeAccount();
+                    saveToLocal();
+                    
+                    alert("โหลดข้อมูลทั้งหมดจาก CSV สำเร็จ");
+                }
+            } else if (csvImportData.isDailyExport) {
+                // กรณีไฟล์รายวัน
+                const { accountName, exportDate, records: recordsToAdd } = csvImportData;
+                const confirmMsg = `ไฟล์ CSV นี้มีข้อมูลของวันที่ ${exportDate} จำนวน ${recordsToAdd.length} รายการ สำหรับบัญชี "${accountName}"\n\nกด OK เพื่อ "เพิ่ม" รายการเหล่านี้ (ข้อมูลซ้ำจะถูกข้าม)`;
+                
+                if (confirm(confirmMsg)) {
+                    if (!accounts.includes(accountName)) {
+                        accounts.push(accountName);
+                    }
+                    
+                    let addedCount = 0;
+                    let skippedCount = 0;
+                    
+                    recordsToAdd.forEach(recordToAdd => {
+                        const isDuplicate = records.some(existingRecord =>
+                            existingRecord.account === accountName &&
+                            existingRecord.dateTime === recordToAdd.dateTime &&
+                            existingRecord.amount === recordToAdd.amount &&
+                            existingRecord.description === recordToAdd.description &&
+                            existingRecord.type === recordToAdd.type
+                        );
+                        
+                        if (!isDuplicate) {
+                            records.push(recordToAdd);
+                            addedCount++;
+                        } else {
+                            skippedCount++;
+                        }
+                    });
+                    
+                    currentAccount = accountName;
+                    alert(`เติมข้อมูลสำเร็จ!\nเพิ่ม ${addedCount} รายการใหม่\nข้าม ${skippedCount} รายการที่ซ้ำซ้อน`);
+                    
+                    updateAccountSelect();
+                    document.getElementById('accountSelect').value = currentAccount;
+                    changeAccount();
+                    saveToLocal();
+                }
+            } else if (csvImportData.accountName) {
+                // กรณีไฟล์บัญชีเดียว
+                const { accountName, records: newRecords, types: importedTypes } = csvImportData;
+                const confirmMsg = `คุณต้องการ "แทนที่" ข้อมูลทั้งหมดในบัญชี "${accountName}" ด้วยข้อมูล ${newRecords.length} รายการจากไฟล์ CSV นี้ใช่หรือไม่?\n\nคำเตือน: ข้อมูลเดิมในบัญชีนี้จะถูกลบทั้งหมด!`;
+                
+                if (confirm(confirmMsg)) {
+                    if (!accounts.includes(accountName)) {
+                        accounts.push(accountName);
+                    }
+                    
+                    // ลบข้อมูลเดิมของบัญชีนี้
+                    records = records.filter(r => r.account !== accountName);
+                    
+                    // เพิ่มข้อมูลใหม่
+                    records.push(...newRecords);
+                    
+                    // อัปเดตประเภทบัญชี
+                    accountTypes.set(accountName, importedTypes);
+                    
+                    currentAccount = accountName;
+                    alert(`แทนที่ข้อมูลบัญชี "${accountName}" สำเร็จ!`);
+                    
+                    updateAccountSelect();
+                    document.getElementById('accountSelect').value = currentAccount;
+                    changeAccount();
+                    saveToLocal();
+                }
+            } else {
+                alert('ไม่สามารถประมวลผลไฟล์ CSV ได้ รูปแบบอาจไม่ถูกต้อง');
+            }
+        }
+    });
+}
 
     function hideInstallPrompt() { const installGuide = document.getElementById('install-guide'); if (installGuide) { installGuide.style.display = 'none'; } }
     window.addEventListener('appinstalled', () => { console.log('App was installed.'); hideInstallPrompt(); localStorage.setItem('pwa_installed', 'true'); });
