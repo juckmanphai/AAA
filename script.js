@@ -23,17 +23,23 @@ function showToast(message, type = 'info') {
     let backgroundColor = '#007bff'; // เริ่มต้นสีน้ำเงิน
     switch(type) {
         case 'success':
-            backgroundColor = '#28a745';
+            backgroundColor = '#28a745'; // สีเขียว
             break;
         case 'error':
-            backgroundColor = '#dc3545';
+            backgroundColor = '#dc3545'; // สีแดง
             break;
         case 'warning':
-            backgroundColor = '#ffc107';
+            backgroundColor = '#ffc107'; // สีเหลือง
+            break;
+        case 'income':
+            backgroundColor = '#28a745'; // สีเขียวสำหรับรายรับ
+            break;
+        case 'expense':
+            backgroundColor = '#dc3545'; // สีแดงสำหรับรายจ่าย
             break;
         case 'info':
         default:
-            backgroundColor = '#007bff';
+            backgroundColor = '#007bff'; // สีน้ำเงิน
             break;
     }
     
@@ -489,41 +495,122 @@ function editType() {
         return; 
     } 
     
-    const newName = prompt("กรุณากรอกชื่อประเภทใหม่:", currentType); 
-    if (!newName || newName.trim() === '') {
+    // ใช้ฟังก์ชันแก้ไขประเภทแบบใหม่
+    showEditTypeModal(currentType, foundCategory);
+}
+// ฟังก์ชันแสดงโมดอลแก้ไขประเภท
+function showEditTypeModal(currentType, currentCategory) {
+    const modalHTML = `
+        <div id="editTypeModal" class="modal-overlay" style="display: flex;">
+            <div class="format-modal-content">
+                <h3>แก้ไขประเภท: "${currentType}"</h3>
+                <div class="entry-form" style="margin-bottom: 20px;">
+                    <div class="entry-group">
+                        <label for="editTypeName">ชื่อประเภทใหม่:</label>
+                        <input type="text" id="editTypeName" value="${currentType}" required>
+                    </div>
+                    <div class="entry-group">
+                        <label for="editTypeCategory">หมวดหมู่:</label>
+                        <select id="editTypeCategory" required>
+                            <option value="รายรับ" ${currentCategory === 'รายรับ' ? 'selected' : ''}>รายรับ</option>
+                            <option value="รายจ่าย" ${currentCategory === 'รายจ่าย' ? 'selected' : ''}>รายจ่าย</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="format-modal-buttons">
+                    <button onclick="processTypeEdit('${currentType}', '${currentCategory}')" style="background-color: #28a745;">บันทึกการแก้ไข</button>
+                    <button onclick="closeEditTypeModal()" class="btn-cancel">ยกเลิก</button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // เพิ่มโมดอลลงใน DOM
+    const modalContainer = document.createElement('div');
+    modalContainer.innerHTML = modalHTML;
+    document.body.appendChild(modalContainer);
+}
+
+// ฟังก์ชันปิดโมดอลแก้ไขประเภท
+function closeEditTypeModal() {
+    const modal = document.getElementById('editTypeModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// ฟังก์ชันประมวลผลการแก้ไขประเภท
+function processTypeEdit(oldType, oldCategory) {
+    const newTypeName = document.getElementById('editTypeName').value.trim();
+    const newCategory = document.getElementById('editTypeCategory').value;
+    
+    if (!newTypeName) {
         showToast("❌ กรุณากรอกชื่อประเภทใหม่", 'error');
         return;
     }
     
-    const trimmedNewName = newName.trim();
-    if (trimmedNewName === currentType) {
-        showToast("❌ ชื่อประเภทใหม่ต้องแตกต่างจากชื่อเดิม", 'error');
+    if (newTypeName === oldType && newCategory === oldCategory) {
+        showToast("❌ ไม่มีการเปลี่ยนแปลงใดๆ", 'warning');
+        closeEditTypeModal();
         return;
     }
     
-    // ตรวจสอบว่าชื่อใหม่ซ้ำกับประเภทอื่นหรือไม่
-    for (const category in types) {
-        if (types[category].includes(trimmedNewName)) {
-            showToast(`❌ มีประเภท "${trimmedNewName}" อยู่แล้วในระบบ`, 'error');
-            return;
+    initializeAccountTypes(currentAccount);
+    const types = accountTypes.get(currentAccount);
+    
+    // ตรวจสอบว่าชื่อใหม่ซ้ำกับประเภทอื่นหรือไม่ (ยกเว้นชื่อเดิม)
+    if (newTypeName !== oldType) {
+        for (const category in types) {
+            if (types[category].includes(newTypeName)) {
+                showToast(`❌ มีประเภท "${newTypeName}" อยู่แล้วในระบบ`, 'error');
+                return;
+            }
         }
     }
     
-    // อัพเดทชื่อประเภท
-    const index = types[foundCategory].indexOf(currentType);
-    types[foundCategory][index] = trimmedNewName;
+    // อัพเดทชื่อประเภทและหมวดหมู่
+    const oldIndex = types[oldCategory].indexOf(oldType);
     
-    // อัพเดทใน records
+    if (oldIndex > -1) {
+        // ลบประเภทเดิม
+        types[oldCategory].splice(oldIndex, 1);
+        
+        // เพิ่มประเภทใหม่ในหมวดหมู่ที่เลือก
+        if (!types[newCategory]) {
+            types[newCategory] = [];
+        }
+        types[newCategory].push(newTypeName);
+        
+        // อัพเดทใน records
+        updateRecordsType(oldType, newTypeName, newCategory);
+        
+        updateTypeList();
+        document.getElementById('type').value = newTypeName;
+        
+        showToast(`✓ แก้ไขประเภท "${oldType}" เป็น "${newTypeName}" ในหมวด "${newCategory}" สำเร็จ`, 'success');
+        saveToLocal();
+    }
+    
+    closeEditTypeModal();
+}
+
+// ฟังก์ชันอัพเดทประเภทในข้อมูลที่บันทึกไว้
+function updateRecordsType(oldType, newType, newCategory) {
+    let updatedCount = 0;
+    
     records.forEach(record => { 
-        if (record.account === currentAccount && record.type === currentType) { 
-            record.type = trimmedNewName; 
+        if (record.account === currentAccount && record.type === oldType) { 
+            record.type = newType;
+            updatedCount++;
         } 
-    }); 
+    });
     
-    updateTypeList(); 
-    typeInput.value = trimmedNewName; 
-    showToast(`✓ แก้ไขชื่อประเภทเป็น "${trimmedNewName}" สำเร็จ`, 'success'); 
-    saveToLocal(); 
+    console.log(`✅ อัพเดทประเภทใน ${updatedCount} รายการ`);
+    
+    if (updatedCount > 0) {
+        displayRecords();
+        showToast(`✓ อัพเดทประเภทใน ${updatedCount} รายการที่บันทึกไว้`, 'info');
+    }
 }
 
 function deleteType() { 
@@ -557,13 +644,21 @@ function deleteType() {
     } 
     
     // ตรวจสอบว่ามีการใช้งานประเภทนี้ใน records หรือไม่
-    const usedInRecords = records.some(record => 
+    const recordsToDelete = records.filter(record => 
         record.account === currentAccount && record.type === currentType
     );
     
-    if (usedInRecords) {
-        const confirmDelete = confirm(`ประเภท "${currentType}" ถูกใช้ใน ${records.filter(r => r.account === currentAccount && r.type === currentType).length} รายการ\n\nการลบประเภทนี้อาจทำให้ข้อมูลเดิมแสดงผลไม่ถูกต้อง\nคุณแน่ใจว่าจะลบประเภทนี้หรือไม่?`); 
+    if (recordsToDelete.length > 0) {
+        const confirmDelete = confirm(
+            `ประเภท "${currentType}" ถูกใช้ใน ${recordsToDelete.length} รายการ\n\n` +
+            `⚠️ การลบประเภทนี้จะทำให้รายการทั้งหมดที่ใช้ประเภทนี้ถูกลบออกไปด้วย!\n\n` +
+            `คุณแน่ใจว่าจะลบประเภท "${currentType}" และรายการทั้งหมดที่เกี่ยวข้องหรือไม่?`
+        ); 
+        
         if (!confirmDelete) return;
+        
+        // ลบข้อมูลที่บันทึกไว้
+        deleteRecordsByType(currentType);
     } else {
         const confirmDelete = confirm(`คุณแน่ใจว่าจะลบประเภท "${currentType}" หรือไม่?`); 
         if (!confirmDelete) return;
@@ -575,7 +670,13 @@ function deleteType() {
     
     updateTypeList(); 
     typeInput.value = ''; 
-    showToast(`✓ ลบประเภท "${currentType}" สำเร็จ`, 'success'); 
+    
+    if (recordsToDelete.length > 0) {
+        showToast(`✓ ลบประเภท "${currentType}" และ ${recordsToDelete.length} รายการที่เกี่ยวข้องสำเร็จ`, 'success');
+    } else {
+        showToast(`✓ ลบประเภท "${currentType}" สำเร็จ`, 'success');
+    }
+    
     saveToLocal(); 
 }
 
@@ -591,37 +692,55 @@ function showTypeManagement() {
     
     let typeListHTML = `
         <h3>จัดการประเภท - บัญชี: ${currentAccount}</h3>
-        <div style="display: flex; gap: 20px;">
-            <div>
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 200px;">
                 <h4>รายรับ</h4>
-                <ul id="incomeTypesList" style="min-height: 100px; border: 1px solid #ccc; padding: 10px;">
+                <ul id="incomeTypesList" style="min-height: 100px; border: 1px solid #ccc; padding: 10px; list-style: none;">
     `;
     
     types["รายรับ"].forEach(type => {
-        typeListHTML += `<li>${type} <button onclick="quickDeleteType('รายรับ', '${type}')">ลบ</button></li>`;
+        typeListHTML += `
+            <li style="padding: 5px; margin: 2px 0; display: flex; justify-content: space-between; align-items: center;">
+                <span>${type}</span>
+                <div>
+                    <button onclick="quickEditType('รายรับ', '${type}')" style="background-color: #ffc107; padding: 2px 8px; font-size: 12px;">แก้ไข</button>
+                    <button onclick="quickDeleteType('รายรับ', '${type}')" style="background-color: #dc3545; padding: 2px 8px; font-size: 12px;">ลบ</button>
+                </div>
+            </li>`;
     });
     
     typeListHTML += `
                 </ul>
-                <button onclick="quickAddType('รายรับ')">เพิ่มรายรับ</button>
+                <button onclick="quickAddType('รายรับ')" style="width: 100%; margin-top: 5px;">➕ เพิ่มรายรับ</button>
             </div>
-            <div>
+            <div style="flex: 1; min-width: 200px;">
                 <h4>รายจ่าย</h4>
-                <ul id="expenseTypesList" style="min-height: 100px; border: 1px solid #ccc; padding: 10px;">
+                <ul id="expenseTypesList" style="min-height: 100px; border: 1px solid #ccc; padding: 10px; list-style: none;">
     `;
     
     types["รายจ่าย"].forEach(type => {
-        typeListHTML += `<li>${type} <button onclick="quickDeleteType('รายจ่าย', '${type}')">ลบ</button></li>`;
+        typeListHTML += `
+            <li style="padding: 5px; margin: 2px 0; display: flex; justify-content: space-between; align-items: center;">
+                <span>${type}</span>
+                <div>
+                    <button onclick="quickEditType('รายจ่าย', '${type}')" style="background-color: #ffc107; padding: 2px 8px; font-size: 12px;">แก้ไข</button>
+                    <button onclick="quickDeleteType('รายจ่าย', '${type}')" style="background-color: #dc3545; padding: 2px 8px; font-size: 12px;">ลบ</button>
+                </div>
+            </li>`;
     });
     
     typeListHTML += `
                 </ul>
-                <button onclick="quickAddType('รายจ่าย')">เพิ่มรายจ่าย</button>
+                <button onclick="quickAddType('รายจ่าย')" style="width: 100%; margin-top: 5px;">➕ เพิ่มรายจ่าย</button>
             </div>
         </div>
     `;
     
     openSummaryModal(typeListHTML);
+}
+// ฟังก์ชันแก้ไขประเภทแบบเร็ว (จาก UI การจัดการ)
+function quickEditType(category, typeName) {
+    showEditTypeModal(typeName, category);
 }
 
 function quickAddType(category) {
@@ -648,22 +767,72 @@ function quickAddType(category) {
 }
 
 function quickDeleteType(category, typeName) {
-    if (!confirm(`ลบประเภท "${typeName}" จากหมวด "${category}"?`)) return;
+    // ตรวจสอบว่ามีการใช้งานประเภทนี้ใน records หรือไม่
+    const recordsToDelete = records.filter(record => 
+        record.account === currentAccount && record.type === typeName
+    );
+    
+    let confirmMessage;
+    if (recordsToDelete.length > 0) {
+        confirmMessage = 
+            `ลบประเภท "${typeName}" จากหมวด "${category}"?\n\n` +
+            `⚠️ ประเภทนี้ถูกใช้ใน ${recordsToDelete.length} รายการ\n` +
+            `การลบจะทำให้รายการทั้งหมดที่ใช้ประเภทนี้ถูกลบออกไปด้วย!`;
+    } else {
+        confirmMessage = `ลบประเภท "${typeName}" จากหมวด "${category}"?`;
+    }
+    
+    if (!confirm(confirmMessage)) return;
     
     initializeAccountTypes(currentAccount);
     const types = accountTypes.get(currentAccount);
     const index = types[category].indexOf(typeName);
     
     if (index > -1) {
+        // ลบข้อมูลที่บันทึกไว้ (ถ้ามี)
+        if (recordsToDelete.length > 0) {
+            deleteRecordsByType(typeName);
+        }
+        
+        // ลบประเภท
         types[category].splice(index, 1);
         updateTypeList();
         saveToLocal();
         
-        showToast(`✓ ลบประเภท "${typeName}" สำเร็จ`, 'success');
+        if (recordsToDelete.length > 0) {
+            showToast(`✓ ลบประเภท "${typeName}" และ ${recordsToDelete.length} รายการที่เกี่ยวข้องสำเร็จ`, 'success');
+        } else {
+            showToast(`✓ ลบประเภท "${typeName}" สำเร็จ`, 'success');
+        }
         
         // รีเฟรช modal
         showTypeManagement();
     }
+}
+// ฟังก์ชันลบข้อมูลที่บันทึกไว้ตามประเภท
+function deleteRecordsByType(typeToDelete) {
+    let deletedCount = 0;
+    
+    // นับจำนวนรายการที่จะลบ
+    const recordsToDeleteCount = records.filter(record => 
+        record.account === currentAccount && record.type === typeToDelete
+    ).length;
+    
+    // ลบรายการทั้งหมดที่ใช้ประเภทนี้
+    records = records.filter(record => 
+        !(record.account === currentAccount && record.type === typeToDelete)
+    );
+    
+    deletedCount = recordsToDeleteCount;
+    
+    console.log(`🗑️ ลบ ${deletedCount} รายการที่ใช้ประเภท "${typeToDelete}"`);
+    
+    if (deletedCount > 0) {
+        displayRecords();
+        showToast(`🗑️ ลบ ${deletedCount} รายการที่ใช้ประเภท "${typeToDelete}" ออกแล้ว`, 'info');
+    }
+    
+    return deletedCount;
 }
 
 // ==============================================
@@ -679,6 +848,7 @@ function addEntry() {
     const amount = parseFloat(document.getElementById('amount').value);
     let datePart, timePart;
     
+    // ใช้ค่าจาก input หรือใช้ค่าวันที่เวลาปัจจุบันถ้าไม่มีค่า
     if (!entryDateInput || !entryTimeInput) {
         const now = new Date();
         const y = now.getFullYear();
@@ -713,9 +883,9 @@ function addEntry() {
     
     initializeAccountTypes(currentAccount);
     const types = accountTypes.get(currentAccount);
-    let entryCategory = 'expense'; // เริ่มต้นเป็นรายจ่าย
+    let entryCategory = 'expense';
     if (types["รายรับ"].includes(typeText)) {
-        entryCategory = 'income'; // เปลี่ยนเป็นรายรับถ้าพบในรายรับ
+        entryCategory = 'income';
     }
     
     if (editingIndex !== null) {
@@ -733,25 +903,20 @@ function addEntry() {
         if (selectedCheckboxes.length > 0) {
             showToast(`✓ เพิ่มรายการ "${description}" ใน ${selectedCheckboxes.length + 1} บัญชีสำเร็จ`, 'success');
         } else {
-            // ใช้ entryCategory เพื่อกำหนดสีของ Toast
-            if (entryCategory === 'income') {
-                showToast(`💰 เพิ่มรายรับ "${description}" สำเร็จ`, 'success');
-            } else {
-                showToast(`💸 เพิ่มรายจ่าย "${description}" สำเร็จ`, 'error');
-            }
+            showToast(`✓ เพิ่มรายการ "${description}" สำเร็จ`, 'success');
         }
     }
     
     displayRecords();
     document.getElementById('description').value = '';
     document.getElementById('amount').value = '';
-    document.getElementById('entryDate').value = '';
-    document.getElementById('entryTime').value = '';
+    // รีเซ็ตเป็นค่าวันที่เวลาปัจจุบันหลังจากเพิ่มรายการ
+    setCurrentDateTime();
     typeInput.value = '';
     document.querySelectorAll('#multiAccountCheckboxes input:checked').forEach(checkbox => {
         checkbox.checked = false;
     });
-    saveDataAndShowToast(entryCategory); // ส่งประเภทการบันทึกไปด้วย
+    saveDataAndShowToast(entryCategory);
     updateMultiAccountSelector();
 }
 
@@ -1501,16 +1666,17 @@ function setupDateRangeModal() {
     document.getElementById('dateRangeAccountName').textContent = currentAccount;
     
     const accountRecords = records.filter(record => record.account === currentAccount);
-    let startDateValue = new Date().toISOString().slice(0, 10);
     
-    if (accountRecords.length > 0) {
-        const dates = accountRecords.map(record => parseLocalDateTime(record.dateTime));
-        const minDate = new Date(Math.min(...dates));
-        startDateValue = minDate.toISOString().slice(0, 10);
-    }
+    // วันที่สิ้นสุดเป็นวันปัจจุบัน
+    const endDateValue = new Date().toISOString().slice(0, 10);
+    
+    // วันที่เริ่มต้นเป็น 2 วันที่ผ่านมา
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 2); // ลบ 2 วัน
+    const startDateValue = startDate.toISOString().slice(0, 10);
     
     document.getElementById('exportStartDate').value = startDateValue;
-    document.getElementById('exportEndDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('exportEndDate').value = endDateValue;
 }
 
 function processDateRangeExport() {
@@ -1608,16 +1774,16 @@ function saveDataAndShowToast(entryCategory = 'neutral') {
         return; 
     } 
     
-    // กำหนดข้อความและสีตามประเภทการบันทึก
+    // ใช้ฟังก์ชัน showToast แทนการจัดการ toast โดยตรง
     let message = '✓ บันทึกข้อมูลสำเร็จแล้ว';
     let type = 'info';
     
     if (entryCategory === 'income') { 
-        message = '💰 บันทึกรายรับสำเร็จ';
-        type = 'success'; // สีเขียว
+        message = '✓ บันทึกรายรับสำเร็จ';
+        type = 'income'; // เปลี่ยนจาก 'success' เป็น 'income'
     } else if (entryCategory === 'expense') { 
-        message = '💸 บันทึกรายจ่ายสำเร็จ'; 
-        type = 'error'; // สีแดง
+        message = '✓ บันทึกรายจ่ายสำเร็จ';
+        type = 'expense'; // เปลี่ยนจาก 'success' เป็น 'expense'
     }
     
     showToast(message, type);
@@ -2613,7 +2779,24 @@ function filterRecordsByDateRange(startDate, endDate) {
 function showNoDataAlert(startDateStr, endDateStr) {
     showToast(`❌ ไม่พบข้อมูลในบัญชี "${currentAccount}" ระหว่างวันที่ ${startDateStr} ถึง ${endDateStr}`, 'error');
 }
+// ==============================================
+// ฟังก์ชันตั้งค่าวันที่และเวลาปัจจุบัน
+// ==============================================
 
+function setCurrentDateTime() {
+    const now = new Date();
+    
+    // ตั้งค่าวันที่ (รูปแบบ YYYY-MM-DD)
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    document.getElementById('entryDate').value = `${year}-${month}-${day}`;
+    
+    // ตั้งค่าเวลา (รูปแบบ HH:MM)
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('entryTime').value = `${hours}:${minutes}`;
+}
 // ==============================================
 // ฟังก์ชันเริ่มต้น
 // ==============================================
@@ -2622,6 +2805,9 @@ window.onload = function () {
     document.getElementById('detailsSection').style.display = 'none';
     loadFromLocal();
     toggleSection('account-section');
+    
+    // ตั้งค่าวันที่และเวลาปัจจุบันเมื่อโหลดหน้าเว็บ
+    setCurrentDateTime();
     
     document.getElementById('backup-password-form').addEventListener('submit', saveBackupPassword);
     document.getElementById('show-backup-password').addEventListener('change', (e) => {
